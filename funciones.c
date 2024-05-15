@@ -107,9 +107,17 @@ BMPImage* saturate_bmp(BMPImage* image, float factor) {
     for (int y = 0; y < image->height; y++) {
         for (int x = 0; x < image->width; x++) {
             RGBPixel pixel = image->data[y * image->width + x];
+
+            // Saturar cada componente de color multiplicándolo por el factor de saturación
             pixel.r = (unsigned char)(pixel.r * factor);
             pixel.g = (unsigned char)(pixel.g * factor);
             pixel.b = (unsigned char)(pixel.b * factor);
+
+            // Asegurarse de que los valores no excedan 255
+            pixel.r = (pixel.r > 255) ? 255 : pixel.r;
+            pixel.g = (pixel.g > 255) ? 255 : pixel.g;
+            pixel.b = (pixel.b > 255) ? 255 : pixel.b;
+
             new_image->data[y * image->width + x] = pixel;
         }
     }
@@ -117,6 +125,8 @@ BMPImage* saturate_bmp(BMPImage* image, float factor) {
     return new_image;
 }
 
+
+//funcion para escalar a grises los colores de la imagen
 BMPImage* grises_bmp(BMPImage* image) {
     BMPImage* new_image = (BMPImage*)malloc(sizeof(BMPImage));
     new_image->width = image->width;
@@ -127,15 +137,50 @@ BMPImage* grises_bmp(BMPImage* image) {
         for (int x = 0; x < image->width; x++)
         {
             RGBPixel pixel = image->data[y * image->width + x];
-            pixel.r = (unsigned char)(pixel.r * 0.3);
-            pixel.g = (unsigned char)(pixel.g * 0.59);
-            pixel.b = (unsigned char)(pixel.b * 0.11);
+
+            // Aplicar la ecuación de luminiscencia para convertir a escala de grises
+            unsigned char grayscale = (unsigned char)(pixel.r * 0.3 + pixel.g * 0.59 + pixel.b * 0.11);
+            // Asignar el mismo valor a los componentes de rojo, verde y azul para obtener una escala de grises
+
+            pixel.r = grayscale;
+            pixel.g = grayscale;
+            pixel.b = grayscale;
+
             new_image->data[y * image->width + x] = pixel;
         }
     }
 
     return new_image;
 }
+
+
+//funcion para binarizar los colores de la imagen
+BMPImage* binarize_bmp(BMPImage* image, float threshold) {
+    BMPImage* new_image = (BMPImage*)malloc(sizeof(BMPImage));
+    new_image->width = image->width;
+    new_image->height = image->height;
+    new_image->data = (RGBPixel*)malloc(sizeof(RGBPixel) * image->width * image->height);
+
+    for (int y = 0; y < image->height; y++) {
+        for (int x = 0; x < image->width; x++) {
+            RGBPixel pixel = image->data[y * image->width + x];
+            // Calcular el valor promedio de los componentes de color y compararlo con el umbral
+            float average = (pixel.r + pixel.g + pixel.b) / 3.0f;
+            if (average > threshold) {
+                // Si el valor promedio es mayor que el umbral, asignar 1
+                pixel.r = pixel.g = pixel.b = 255; // Blanco
+            } else {
+                // Si el valor promedio es menor o igual al umbral, asignar 0
+                pixel.r = pixel.g = pixel.b = 0; // Negro
+            }
+            new_image->data[y * image->width + x] = pixel;
+        }
+    }
+
+    return new_image;
+}
+
+
 
 //funcion para guardar la imagen en un archivo
 void write_bmp(const char* filename, BMPImage* image) {
@@ -199,8 +244,12 @@ int main() {
     BMPImage* new_image_gris = grises_bmp(image);
     write_bmp("gris.bmp", new_image_gris);
 
+    BMPImage* new_image_binarize = binarize_bmp(image, 80.0f);
+    write_bmp("binarize.bmp", new_image_binarize);
+
     free_bmp(image);
     free_bmp(new_image);
     free_bmp(new_image_gris);
+    free_bmp(new_image_binarize);
     return 0;
 }
