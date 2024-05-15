@@ -181,6 +181,31 @@ BMPImage* binarize_bmp(BMPImage* image, float threshold) {
 }
 
 
+// Función para determinar si una imagen es "casi negra"
+int is_nearly_black(BMPImage* image, float threshold) {
+    int total_pixels = image->width * image->height;
+    int black_pixels = 0;
+
+    // Contar el número de píxeles negros en la imagen
+    for (int i = 0; i < total_pixels; i++) {
+        RGBPixel pixel = image->data[i];
+        if (pixel.r == 0 && pixel.g == 0 && pixel.b == 0) {
+            black_pixels++;
+        }
+    }
+
+    // Calcular el porcentaje de píxeles negros
+    float percentage = (float)black_pixels / total_pixels;
+
+    // Determinar si el porcentaje de píxeles negros es mayor o igual al umbral
+    if (percentage >= threshold) {
+        return 1; // La imagen es "casi negra"
+    } else {
+        return 0; // La imagen no es "casi negra"
+    }
+}
+
+
 
 //funcion para guardar la imagen en un archivo
 void write_bmp(const char* filename, BMPImage* image) {
@@ -246,6 +271,9 @@ int main() {
 
     BMPImage* new_image_binarize = binarize_bmp(image, 80.0f);
     write_bmp("binarize.bmp", new_image_binarize);
+
+    int clasificacion = is_nearly_black(image, 0.0f);
+    printf("clasificacion: %d\n", clasificacion); 
 
     free_bmp(image);
     free_bmp(new_image);
