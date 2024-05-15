@@ -117,6 +117,26 @@ BMPImage* saturate_bmp(BMPImage* image, float factor) {
     return new_image;
 }
 
+BMPImage* grises_bmp(BMPImage* image) {
+    BMPImage* new_image = (BMPImage*)malloc(sizeof(BMPImage));
+    new_image->width = image->width;
+    new_image->height = image->height;
+    new_image->data = (RGBPixel*)malloc(sizeof(RGBPixel) * image->width * image->height);
+
+    for (int y = 0; y < image->height; y++) {
+        for (int x = 0; x < image->width; x++)
+        {
+            RGBPixel pixel = image->data[y * image->width + x];
+            pixel.r = (unsigned char)(pixel.r * 0.3);
+            pixel.g = (unsigned char)(pixel.g * 0.59);
+            pixel.b = (unsigned char)(pixel.b * 0.11);
+            new_image->data[y * image->width + x] = pixel;
+        }
+    }
+
+    return new_image;
+}
+
 //funcion para guardar la imagen en un archivo
 void write_bmp(const char* filename, BMPImage* image) {
     FILE* file = fopen(filename, "wb"); //wb = write binary
@@ -176,7 +196,11 @@ int main() {
     BMPImage* new_image = saturate_bmp(image, 1.1f);
     write_bmp("saturated.bmp", new_image);
 
+    BMPImage* new_image_gris = grises_bmp(image);
+    write_bmp("gris.bmp", new_image_gris);
+
     free_bmp(image);
     free_bmp(new_image);
+    free_bmp(new_image_gris);
     return 0;
 }
