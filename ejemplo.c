@@ -64,6 +64,8 @@ int main(int argc, char *argv[])
     int i = 1 ;
     char numero[10];
 
+    crear_carpeta(carpeta);
+
 
     while (i<=cantidadImagenes){
         sprintf(numero, "%d", i);
@@ -90,7 +92,9 @@ int main(int argc, char *argv[])
 
             BMPImage* new_image = saturate_bmp(image, factor_saturacion);
             char saturado[50];
-            strcpy(saturado, prefijo); 
+            strcpy(saturado, carpeta);
+            strcat(saturado, "/"); 
+            strcat(saturado, prefijo); 
             strcat(saturado, "_"); 
             strcat(saturado, numero); 
             strcat(saturado, "_saturate");
@@ -103,7 +107,9 @@ int main(int argc, char *argv[])
         {
             BMPImage* new_image_gris = grises_bmp(image);
             char grises[50];
-            strcpy(grises, prefijo); 
+            strcpy(grises, carpeta);
+            strcat(grises, "/"); 
+            strcat(grises, prefijo);
             strcat(grises, "_"); 
             strcat(grises, numero);
             strcat(grises, "_grises"); 
@@ -116,7 +122,9 @@ int main(int argc, char *argv[])
         {
             BMPImage* new_image_binarize = binarize_bmp(image, umbral_binarizacion*250.0f);
             char binario[50];
-            strcpy(binario, prefijo); 
+            strcpy(binario, carpeta);
+            strcat(binario, "/"); 
+            strcat(binario, prefijo); 
             strcat(binario, "_"); 
             strcat(binario, numero); 
             strcat(binario, "_binarize");

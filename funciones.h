@@ -50,6 +50,16 @@ typedef struct {
 //
 //
 //
+void escribir_resultados_csv(const char* nombre_imagen, int clasificacion);
+
+//
+//
+//
+int crear_carpeta(const char* nombre_carpeta);
+
+//
+//
+//
 int contarImagen(const char *prefijo);
 
 //

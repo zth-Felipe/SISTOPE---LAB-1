@@ -7,12 +7,34 @@ int crear_carpeta(const char* nombre_carpeta) {
 
     // Verificar si la carpeta se creó correctamente
     if (permiso == 0) {
-        printf("/nLa carpeta se ha creado correctamente.\n");
+        printf("La carpeta se ha creado correctamente.\n");
     } else {
-        printf("/nError al crear la carpeta.\n");
+        printf("Error al crear la carpeta.\n");
     }
 
     return permiso;
+}
+
+
+// Funcion que abre el archivo csv y escribe los resultados de la clasificación
+void escribir_resultados_csv(const char* nombre_imagen, int clasificacion) {
+    FILE *archivo_csv;
+    archivo_csv = fopen("resultados.csv", "a"); // Abre el archivo en modo append (añadir al final)
+
+    if (archivo_csv == NULL) {
+        printf("Error al abrir el archivo CSV.\n");
+        return;
+    }
+
+    // Escribe los encabezados si el archivo está vacío
+    if (ftell(archivo_csv) == 0) {
+        fprintf(archivo_csv, "Nombre,Clasificacion\n");
+    }
+
+    // Escribe el nombre de la imagen y su clasificación en el archivo CSV
+    fprintf(archivo_csv, "%s,%d\n", nombre_imagen, clasificacion);
+
+    fclose(archivo_csv);
 }
 
 // Contar Imagenes en el directorio
