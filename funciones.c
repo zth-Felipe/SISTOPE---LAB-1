@@ -263,16 +263,16 @@ int main() {
         }
     }
 
-    BMPImage* new_image = saturate_bmp(image, 1.1f);
+    BMPImage* new_image = saturate_bmp(image, 1.3f);
     write_bmp("saturated.bmp", new_image);
 
     BMPImage* new_image_gris = grises_bmp(image);
     write_bmp("gris.bmp", new_image_gris);
 
-    BMPImage* new_image_binarize = binarize_bmp(image, 80.0f);
+    BMPImage* new_image_binarize = binarize_bmp(image, 0.5f*250.0f);
     write_bmp("binarize.bmp", new_image_binarize);
 
-    int clasificacion = is_nearly_black(image, 0.0f);
+    int clasificacion = is_nearly_black(image, 0.5f);
     printf("clasificacion: %d\n", clasificacion); 
 
     free_bmp(image);
