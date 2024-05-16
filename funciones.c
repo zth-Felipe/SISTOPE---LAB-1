@@ -1,53 +1,61 @@
 #include "funciones.h"
 
-int sum(int a, int b){
-    return a+b;
+// Función para crear una carpeta
+int crear_carpeta(const char* nombre_carpeta) {
+    // Crear la carpeta
+    int permiso = mkdir(nombre_carpeta, 0777);
+
+    // Verificar si la carpeta se creó correctamente
+    if (permiso == 0) {
+        printf("/nLa carpeta se ha creado correctamente.\n");
+    } else {
+        printf("/nError al crear la carpeta.\n");
+    }
+
+    return permiso;
 }
 
-int resta(int a, int b){
-    return a-b;
+// Contar Imagenes en el directorio
+int contarImagen(const char *prefijo) {
+    DIR *dir;
+    struct dirent *entrada;
+    int contador = 0;
+    size_t prefijo_len = strlen(prefijo);
+    size_t extension_len = strlen(".bmp");
+
+    // Abre el directorio
+    dir = opendir(".");
+    if (dir == NULL) {
+        perror("No se pudo abrir el directorio actual");
+        return -1;
+    }
+
+    // Lee las entradas del directorio
+    while ((entrada = readdir(dir)) != NULL) {
+        // Ignora las entradas "." y ".."
+        if (strcmp(entrada->d_name, ".") == 0 || strcmp(entrada->d_name, "..") == 0) {
+            continue;
+        }
+        // Verifica si la entrada tiene al menos la longitud del prefijo y la extensión
+        if (strlen(entrada->d_name) < prefijo_len + extension_len) {
+            continue;
+        }
+        // Comprueba si la entrada comienza con el prefijo y termina con ".bmp"
+        if (strncmp(entrada->d_name, prefijo, prefijo_len) == 0 &&
+            strcmp(entrada->d_name + strlen(entrada->d_name) - extension_len, ".bmp") == 0) {
+            contador++;
+        }
+    }
+
+    // Cierra el directorio 
+    closedir(dir);
+
+    return contador;
 }
 
 
 //Ejemplo de lectura y escritura de imagen BMP en C
 
-#pragma pack(push, 1) 
-//cuando se trabaja con uint se usa para leer directamente los bytes de la imagen, push hace que la estructura se lea byte por byte y pop hace que se lea de forma normal
-typedef struct {
-    // BMP Header | Tipo de dato por bits | Descripción
-    uint16_t type; // Tipo de dato, tiene 2 bytes y es un número que indica si el archivo es BMP a través de las siglas BM
-    uint32_t size; // Tamaño del archivo, tiene 4 bytes y es un número que indica el tamaño del archivo en bytes
-    uint16_t reserved1; // Reservado, tiene 2 bytes y es un número que no se utiliza
-    uint16_t reserved2; // Reservado, tiene 2 bytes y es un número que no se utiliza
-    uint32_t offset; // Offset, tiene 4 bytes y es un número que indica la posición en bytes donde comienza la información de la imagen
-} BMPHeader;
-
-typedef struct {
-    uint32_t size; // Tamaño de la información de la imagen, tiene 4 bytes y es un número que indica el tamaño de la información de la imagen en bytes
-    int32_t width; // Ancho de la imagen, tiene 4 bytes y es un número que indica el ancho de la imagen en píxeles
-    int32_t height; // Alto de la imagen, tiene 4 bytes y es un número que indica el alto de la imagen en píxeles
-    uint16_t planes; // Planos, tiene 2 bytes y es un número que indica la cantidad de planos de color, debe valer 1
-    uint16_t bit_count; // Bits por píxel, tiene 2 bytes y es un número que indica la cantidad de bits por píxel, debe valer 1, 4, 8, 16, 24, or 32
-    uint32_t compression; // Compresión, tiene 4 bytes y es un número que indica el tipo de compresión, puede ser 0 (sin compresión), 1 (RLE 8-bit/píxel), 2 (RLE 4-bit/píxel), 3 (bitfields), 4 (JPEG), 5 (PNG)
-    uint32_t size_image; // Tamaño de la imagen, tiene 4 bytes y es un número que indica el tamaño de la imagen en bytes
-    int32_t x_pixels_per_meter; // Píxeles por metro en el eje X, tiene 4 bytes y es un número que indica la cantidad de píxeles por metro en el eje X
-    int32_t y_pixels_per_meter; // Píxeles por metro en el eje Y, tiene 4 bytes y es un número que indica la cantidad de píxeles por metro en el eje Y
-    uint32_t colors_used; // Colores usados, tiene 4 bytes y es un número que indica la cantidad de colores usados
-    uint32_t colors_important; // Colores importantes, tiene 4 bytes y es un número que indica la cantidad de colores importantes
-} BMPInfoHeader;
-#pragma pack(pop)
-
-typedef struct {
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-} RGBPixel;
-
-typedef struct {
-    int width;
-    int height;
-    RGBPixel *data; // Puntero a los píxeles de la imagen 
-} BMPImage;
 
 BMPImage* read_bmp(const char* filename) {
     FILE* file = fopen(filename, "rb"); //rb = read binary
@@ -245,39 +253,3 @@ void write_bmp(const char* filename, BMPImage* image) {
     fclose(file);
 }
 
-int main() {
-    const char* filename = "rb.bmp";
-    BMPImage* image = read_bmp(filename);
-    if (!image) {
-        return 1;
-    }
-
-    printf("Ancho de la imagen: %d\n", image->width);
-    printf("Alto de la imagen: %d\n", image->height);
-
-    // Acceder a los píxeles de la imagen
-    for (int y = 0; y < image->height; y++) {
-        for (int x = 0; x < image->width; x++) {
-            RGBPixel pixel = image->data[y * image->width + x];
-            printf("Pixel (%d, %d): R=%d, G=%d, B=%d\n", x, y, pixel.r, pixel.g, pixel.b);
-        }
-    }
-
-    BMPImage* new_image = saturate_bmp(image, 1.3f);
-    write_bmp("saturated.bmp", new_image);
-
-    BMPImage* new_image_gris = grises_bmp(image);
-    write_bmp("gris.bmp", new_image_gris);
-
-    BMPImage* new_image_binarize = binarize_bmp(image, 0.5f*250.0f);
-    write_bmp("binarize.bmp", new_image_binarize);
-
-    int clasificacion = is_nearly_black(image, 0.5f);
-    printf("clasificacion: %d\n", clasificacion); 
-
-    free_bmp(image);
-    free_bmp(new_image);
-    free_bmp(new_image_gris);
-    free_bmp(new_image_binarize);
-    return 0;
-}
