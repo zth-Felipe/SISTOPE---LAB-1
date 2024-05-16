@@ -137,6 +137,8 @@ int main(int argc, char *argv[])
         int clasificacion = is_nearly_black(image, umbral_clasificacion);
         printf("clasificacion: %d\n", clasificacion); 
 
+        escribir_resultados_csv(nombre, clasificacion);
+
         //free_bmp(new_image);
         //free_bmp(new_image_gris);
         //free_bmp(new_image_binarize);
