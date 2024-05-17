@@ -47,52 +47,56 @@ typedef struct {
     RGBPixel *data; // Puntero a los píxeles de la imagen 
 } BMPImage;
 
-//
-//
-//
+
+
+// Entrada: texto constante correspondiente al nombre de la imagen procesada y un entero el cual es 0 o 1
+// Salida: un archivo .csv que se alojara en la direccion actual
+// Descripcion: funcion que recopila la clasificacion a base del umbral de oscuridad de cada imagen y los almacena en un archivo.csv
 void escribir_resultados_csv(const char* nombre_imagen, int clasificacion);
 
-//
-//
-//
+// Entrada: texto constante correspondiente a un nombre para carpeta
+// Salida: entero indicando si se creo correctamente y con los permisos correspondinetes
+// Descpripcion: crear una carpeta en la direccion actual de ejecucion con el nombre que se pasa en nombre_carpeta 
 int crear_carpeta(const char* nombre_carpeta);
 
-//
-//
-//
+// Entrada: tecto constante correspondiente al prefijo de entrada (img,imagen,photo)
+// Salida: numero entero positivo o 0 
+// Descripcion: funcion que accede al directorio o ruta actual y cuenta todos los archivos que coincidand con el prefijo indicado y que tengan extencion .bmp
 int contarImagen(const char *prefijo);
 
-// Entradas: nombre de la imagen
-// Salidas: imagen leida
-// Descripcion: lee el contenido del archivo y lo "lee" de manera que se pueda manejar
+//
+//
+//
 BMPImage* read_bmp(const char* filename);
 
-// Entradas: imagen leida
-// Salida: no retorna nada
-// Descripcion: con los parametros ya trabajados, se liberan para no perjudicar la memoria
+//
+//
+//
 void free_bmp(BMPImage* image);
 
-// Entradas: imagen leida, factor
-// Salida: imagen saturada
-// Descripcion: por cada pixel de la imagen, se multiplica por el factor para saturar la imagen
+//
+//
+//
 BMPImage* saturate_bmp(BMPImage* image, float factor);
 
-// Entradas: imagen leida
-// Salida: imagen a escala de grises
-// Descripcion: transforma la imagen a escala de grises
+//
+//
+//
 BMPImage* grises_bmp(BMPImage* image);
 
-// Entrada: imagen leida, umbral
-// Salida: imagen binarizada dependiendo del umbral
-// Descripcion: dependiendo del umbral es un limite si el pixel se establece en negro (255) o blanco (0)
+//
+//
+//
 BMPImage* binarize_bmp(BMPImage* image, float threshold);
 
-// Entrada: imagen leida, umbral
-// Salida: 1 o 0
-// Descripcion: dependiendo del umbral indicado, se revisa si existen pixeles mayormente negros que blancos
+//
+//
+//
 int is_nearly_black(BMPImage* image, float threshold);
 
-//
-//
-//
+// Entrada: texto constante correspondiente a nombre identificativo y una imagen
+// Salida: funcion tipo void, ejecuta serie de instruccion sin un retrono especifico 
+// Descripcion: "guarda" la imagen ya procesada en una ruta especifica.
 void write_bmp(const char* filename, BMPImage* image);
+
+
