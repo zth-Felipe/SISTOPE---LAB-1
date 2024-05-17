@@ -62,47 +62,37 @@ int crear_carpeta(const char* nombre_carpeta);
 //
 int contarImagen(const char *prefijo);
 
-//
-//
-//
+// Entradas: nombre de la imagen
+// Salidas: imagen leida
+// Descripcion: lee el contenido del archivo y lo "lee" de manera que se pueda manejar
 BMPImage* read_bmp(const char* filename);
 
-//
-//
-//
+// Entradas: imagen leida
+// Salida: no retorna nada
+// Descripcion: con los parametros ya trabajados, se liberan para no perjudicar la memoria
 void free_bmp(BMPImage* image);
 
-//
-//
-//
+// Entradas: imagen leida, factor
+// Salida: imagen saturada
+// Descripcion: por cada pixel de la imagen, se multiplica por el factor para saturar la imagen
 BMPImage* saturate_bmp(BMPImage* image, float factor);
 
-//
-//
-//
+// Entradas: imagen leida
+// Salida: imagen a escala de grises
+// Descripcion: transforma la imagen a escala de grises
 BMPImage* grises_bmp(BMPImage* image);
 
-//
-//
-//
+// Entrada: imagen leida, umbral
+// Salida: imagen binarizada dependiendo del umbral
+// Descripcion: dependiendo del umbral es un limite si el pixel se establece en negro (255) o blanco (0)
 BMPImage* binarize_bmp(BMPImage* image, float threshold);
 
-//
-//
-//
+// Entrada: imagen leida, umbral
+// Salida: 1 o 0
+// Descripcion: dependiendo del umbral indicado, se revisa si existen pixeles mayormente negros que blancos
 int is_nearly_black(BMPImage* image, float threshold);
 
 //
 //
 //
 void write_bmp(const char* filename, BMPImage* image);
-
-//
-//
-//
-int sum(int a, int b);
-
-//
-//
-//
-int resta(int a, int b);
