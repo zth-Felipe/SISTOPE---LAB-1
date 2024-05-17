@@ -19,7 +19,7 @@ int crear_carpeta(const char* nombre_carpeta) {
 // Funcion que abre el archivo csv y escribe los resultados de la clasificación
 void escribir_resultados_csv(const char* nombre_imagen, int clasificacion) {
     FILE *archivo_csv;
-    archivo_csv = fopen("resultados.csv", "a"); // Abre el archivo en modo append (añadir al final)
+    archivo_csv = fopen("resultados.csv", "w"); // Abre el archivo en modo append (añadir al final)
 
     if (archivo_csv == NULL) {
         printf("Error al abrir el archivo CSV.\n");
